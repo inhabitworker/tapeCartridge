@@ -2,11 +2,11 @@
 // Widen base for better stability, larger footprint.
 WideBase = false;
 // The interior radius of the tape roll.
-TapeInner =76/2;
+TapeInner =77/2;
 // The full or current radius of tape.
-TapeOuter = TapeInner+8;
+TapeOuter = 95/2;
 // The depth/height of the tape roll.abs
-TapeDepth = 24;
+TapeDepth = 25.2;
 
 /* [Hidden] */
 $fn=50;
@@ -22,8 +22,8 @@ Overlap = 0.01;
     TapeWidth = TapeOuterAdjusted - TapeInnerAdjusted;
     TapeDepthAdjusted = TapeDepth * Scale;
 
-    Thickness = 1.5;
-    ThicknessSpring = 1.0;
+    Thickness = TapeDepth/10;
+    ThicknessSpring = TapeDepth/20;
 
     Ingress = TapeDepthAdjusted/8;
     IngressSplit = 0.5;
@@ -312,7 +312,9 @@ module Band(BoundingBox = false) {
     if(BoundingBox) #BoundingBox();
 }
 
-    RealDepth = 2*coreBound[1] + 2 + sin(EndAngle)*ThicknessSpring/2;
+    //RealDepth = 2*coreBound[1] + 2 + sin(EndAngle)*ThicknessSpring/2;
+    RealDepth = 2*coreBound[1] + 2 + ThicknessSpring;
+
     BaseDepth = WideBase ? RealDepth*1.5: RealDepth;
 
 module Base() {
@@ -333,7 +335,7 @@ module Base() {
 module Cowl() {
     difference() {
         intersection() {
-            cube([wallOr[0]*2, BandWidth, RealDepth], center=true);
+            cube([wallOr[0]*2, BandWidth, RealDepth+ThicknessSpring/2], center=true);
 
             translate([0,0,-RealDepth/2])
             cylinder(h=RealDepth, r=wallOr[0]+ ThicknessSpring/2);
@@ -343,7 +345,7 @@ module Cowl() {
 
         difference() {
             translate([0,0,-RealDepth/2 - 0.5])
-            cylinder(h=RealDepth+1, r=wallOr[0] - ArcX);
+            cylinder(h=RealDepth+1, r=wallOr[0] - ArcX*1.65);
 
             translate([0,0,-RealDepth/2 -1])
             cylinder(h=RealDepth+2, r=nCore[0]+ArcX);
