@@ -20,7 +20,9 @@ TapeWidthAdj = TapeOuterAdj - TapeInnerAdj;
 
 Thickness = max(2.5, TapeDepthAdj/10);
 BandWidth = TapeOuterAdj*0.75;
-
+// Slices frequency
+Freq = 2;
+        
 Ingress = TapeDepthAdj/8;
 IngressSplit = 0.5;
 IngressAngle = 45;
@@ -41,8 +43,8 @@ SpringAnchor = [
 ];
 
 SpringHeight = 2*(Ceiling + SpringThickness/2);
-SpringLength = 6*Ingress;
-SpringArcRadius = SpringAnchor.y/4;
+SpringLength = 8*Ingress;
+SpringArcRadius = SpringAnchor.y/2;
 
 // Hmm...
 InitSpringAngle = atan((SpringLength)/(SpringHeight));
@@ -216,7 +218,6 @@ module Band(BoundingBox = false) {
     }
 
     module Slices() {
-        Freq = 4;
         Clear = 0.5;
         SliceWidth = (BandWidth / (2*Freq));
         d = SliceWidth + Clear;
@@ -248,16 +249,16 @@ module Band(BoundingBox = false) {
 
         rotate([MouthAngle,0,0])
         translate([-CoreInner,0,-Side])
-        cube([2*CoreInner, BandWidth/2, Side]);
+        cube([2*CoreInner, BandWidth, Side]);
     }
 
     module HalfBand() {
         difference() {
             HalfSwept();
 
-            #Slices();
+            Slices();
             mirror([1,0,0])
-            #Slices();
+            Slices();
 
             MouthFile();
             mirror([0,1,0])
