@@ -6,10 +6,16 @@ TapeOuter= 95;
 // The depth of the tape roll.
 TapeDepth = 25.2;
 
+/* [Tweak] */
+Clearance = 0.5;
+SpringLengthRatio = 1; // [0.0 : 0.01 : 2.0]
+SpringArcRatio = 1; // [0.0 : 0.01 : 2.0]
+CowlThicknessRatio = 1;  // [0.0 : 0.01 : 2.0]
+OuterExtension = 0;
+
 /* [Hidden] */
 $fn=40;
 Overlap = 0.01;
-Clearance = 0.4;
 LayerHeight = 0.2;
 
 Scale = 1;
@@ -29,7 +35,6 @@ IngressAngle = 45;
 
 SpringThickness = min(1.25, TapeDepth/20);
 
-OuterExtension = 2;
 CoreOuter = TapeOuterAdj + Clearance + Overlap + OuterExtension;
 CoreInner = TapeInnerAdj - Clearance;
 
@@ -43,8 +48,8 @@ SpringAnchor = [
 ];
 
 SpringHeight = 2*(Ceiling + SpringThickness/2);
-SpringLength = 8*Ingress;
-SpringArcRadius = SpringAnchor.y/2;
+SpringLength = 8*Ingress*SpringLengthRatio;
+SpringArcRadius = (SpringAnchor.y/2)*SpringArcRatio;
 
 // Hmm...
 InitSpringAngle = atan((SpringLength)/(SpringHeight));
@@ -160,16 +165,18 @@ module Band(BoundingBox = false) {
         Gap = CowlLength/6;
         UpperLength = CowlLength*CowlRatio - Gap;
         LowerLength = CowlLength*(1-CowlRatio) - Gap;
-
+        CowlThickness = Thickness*CowlThicknessRatio;
+        
         function CowlPoints(Length) = [
             [0,0],
             [Length, 0],
-            [Length + tan(CowlAngle)*Thickness, Thickness],
-            [0,Thickness]
+            [Length + tan(CowlAngle)*Thickness, CowlThickness],
+            [0,CowlThickness]
         ];
 
         translate([CoreOuter, Height - Thickness])
         difference() {
+            translate([0,Thickness-CowlThickness,0])
             polygon(CowlPoints(LowerLength));
 
             translate([CowlLength/16, - SpringArcRadius + Thickness/2])
